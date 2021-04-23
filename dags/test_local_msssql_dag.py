@@ -8,9 +8,9 @@ default_args = {
 }
 
 with DAG(
-    'test_etl_mssqlhook',
+    'test_local_msssql_dag',
     default_args=default_args,
-    description='ETL DAG SQL',
+    description='test local mssql dag',
     schedule_interval=None,
     start_date=days_ago(2),
     tags=['test'],
@@ -21,9 +21,9 @@ with DAG(
         print("MEH!")
 
     def extract(**kwargs):
-        conn = MsSqlHook.get_connection(conn_id="mssql_default")
+        conn = MsSqlHook.get_connection(conn_id="mssql_test_db")
         hook = conn.get_hook()
-        df = hook.get_pandas_df(sql="SELECT top 5 * FROM dbo.person")
+        df = hook.get_pandas_df(sql="SELECT top 5 * FROM DRUGS")
         #do whatever you need on the df
         print(df)
 

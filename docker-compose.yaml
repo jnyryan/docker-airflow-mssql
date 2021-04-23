@@ -69,7 +69,7 @@ services:
       POSTGRES_DB: airflow
     volumes:
       - postgres-db-volume:/var/lib/postgresql/data
-      - /Users/j/git/docker-airflow-tutorial/data/postgresql/data
+      # - /Users/j/git/docker-airflow-tutorial/data/postgresql/data
     healthcheck:
       test: ["CMD", "pg_isready", "-U", "airflow"]
       interval: 5s
@@ -131,5 +131,37 @@ services:
       retries: 5
     restart: always
 
+  ##########################################################################
+  # Some extras that are not part of Airflow
+  ##########################################################################
+  sql-server-db:
+      container_name: sql-server-db
+      image: mcr.microsoft.com/mssql/server:2017-latest
+      ports:
+        - 1433:1433
+      environment:
+        SA_PASSWORD: "Iamnotsecure4sure"
+        ACCEPT_EULA: "Y"
+      volumes:
+        - ./data/mssql:/var/opt/mssql
+
+  solr-86:
+    image: solr:8.6
+    container_name: solr-86
+    ports:
+      - "8983:8983"
+    volumes:
+      - ./data/solr86/solr_home:/var/solr/solr_home
+      - ./data/solr86/data:/var/solr/data
+      - ./data/solr86/logs:/var/solr/logs
+    command:
+      - solr-precreate
+      - gettingstarted
+    environment:
+      - SOLR_HOME=/var/solr/solr_home
+      - SOLR_DATA_HOME=/var/solr/data
+      - SOLR_LOGS_DIR=/var/solr/logs
+
 volumes:
   postgres-db-volume:
+  sqldata1:

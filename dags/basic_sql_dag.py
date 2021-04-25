@@ -2,16 +2,15 @@ from airflow import DAG
 from airflow.operators.python import PythonOperator, get_current_context, task
 from airflow.providers.microsoft.mssql.hooks.mssql import MsSqlHook
 from airflow.utils.dates import days_ago
-from lib.TestData import TestData
 
 default_args = {
     'owner': 'airflow',
 }
 
 with DAG(
-    'test_sql_batch',
+    'basic_sql',
     default_args=default_args,
-    description='test sql batch',
+    description='ETL DAG using SQLhook',
     schedule_interval=None,
     start_date=days_ago(2),
     tags=['test'],
@@ -22,17 +21,11 @@ with DAG(
         print("MEH!")
 
     def extract(**kwargs):
-        data = TestData().get_batched_data()
-        ti = kwargs['ti']
-        ti.xcom_push('data', data)
-
-    def transform(**kwargs):
-        ti = kwargs['ti']
-        extract_data = ti.xcom_pull(task_ids='extract', key='data')
-        print("some transform")
-        print(extract_data)
-
-## Task Definitions
+        conn = MsSqlHook.get_connection(conn_id="mssql_test_db")
+        hook = conn.get_hook()
+        df = hook.get_pandas_df(sql="SELECT top 5 * FROM dbo.drugs")
+        #do whatever you need on the df
+        print(df)
 
     start_task = PythonOperator(
         task_id='start',
@@ -44,9 +37,4 @@ with DAG(
         python_callable=extract,
     )
 
-    transform_task = PythonOperator(
-        task_id='transform',
-        python_callable=transform,
-    )
-
-    start_task >> extract_task >> transform_task
+    start_task >> extract_task

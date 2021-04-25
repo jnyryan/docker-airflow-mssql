@@ -16,7 +16,7 @@ default_args = {
 }
 
 with DAG(
-    'test_etl',
+    'test_tasks',
     default_args=default_args,
     description='ETL DAG Test',
     schedule_interval=None,

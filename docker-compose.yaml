@@ -151,17 +151,17 @@ services:
     ports:
       - "8983:8983"
     volumes:
-      - ./data/solr86/solr_home:/var/solr/solr_home
-      - ./data/solr86/data:/var/solr/data
-      - ./data/solr86/logs:/var/solr/logs
+      - ./data/solr/data:/var/solr/data
+      - ./data/solr/logs:/var/solr/logs
     command:
       - solr-precreate
       - gettingstarted
-    environment:
-      - SOLR_HOME=/var/solr/solr_home
-      - SOLR_DATA_HOME=/var/solr/data
-      - SOLR_LOGS_DIR=/var/solr/logs
+    # environment:
+    #  - SOLR_DATA_HOME=/var/solr/cores
+    #   - SOLR_LOGS_DIR=/var/solr/logs
 
 volumes:
   postgres-db-volume:
   sqldata1:
+  data:
+

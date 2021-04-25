@@ -32,3 +32,7 @@ Run a local SOLR instance to put the ETL data into
 
 username: solr
 password: SolrRocks
+
+## References
+
+https://factorpad.com/tech/solr/tutorial/solr-index.html

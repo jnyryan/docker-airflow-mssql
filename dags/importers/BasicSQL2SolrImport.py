@@ -5,6 +5,7 @@
 from airflow.providers.microsoft.mssql.hooks.mssql import MsSqlHook
 import requests
 import json
+import pandas as pd
 
 
 class BasicSQL2SolrImport:
@@ -19,18 +20,20 @@ class BasicSQL2SolrImport:
   def extract(self):
     hook = self.conn.get_hook()
     sql=f"""
-    SELECT top 1000 *
+    SELECT top 10000 *
     FROM drugs
     ORDER BY id;
     """
     df = hook.get_pandas_df(sql=sql)
-    return df.to_json(date_format='iso', orient="records")
+    return df.to_dict()
 
   """
   Transform into SOLR format
   """
   def transform(self, data):
-    return data
+    df = pd.DataFrame.from_dict(data)
+    df.rename(columns = {'ID': 'id', 'DrugName': 'drugName'} , inplace = True)
+    return df.to_json(date_format='iso', orient="records")
 
   """
   Push to SOLR
@@ -44,7 +47,7 @@ class BasicSQL2SolrImport:
       if not resp.ok:
         raise Exception('SOLR ERROR', resp)
       num_rows = len(json.loads(data))
-      print(f'Response from SOLR: {resp}')
+      print(f'Response from SOLR: {resp.json()}')
       # print(f"***Num Records Loaded {num_rows} ")
       return json.dumps({
          "num_rows": num_rows

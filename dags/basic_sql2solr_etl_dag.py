@@ -2,7 +2,7 @@ from airflow import DAG
 from airflow.operators.python import PythonOperator, get_current_context, task
 from airflow.providers.microsoft.mssql.hooks.mssql import MsSqlHook
 from airflow.utils.dates import days_ago
-from common.BasicSQL2SolrImport import BasicSQL2SolrImport
+from importers.BasicSQL2SolrImport import BasicSQL2SolrImport
 import requests
 import json
 
@@ -13,7 +13,7 @@ default_args = {
 with DAG(
     'basic_sql2solr_etl_dag',
     default_args=default_args,
-    description='import sql batches to solr',
+    description='basic import sql data to solr',
     schedule_interval=None,
     start_date=days_ago(2),
     tags=['test'],
@@ -40,6 +40,12 @@ with DAG(
         print(load_data)
         return load_data
 
+    def report(**kwargs):
+        print("*** REPORT")
+        ti = kwargs['ti']
+        load_data = ti.xcom_pull(task_ids='load')
+        print(load_data)
+
 
 ## Task Definitions
 
@@ -58,4 +64,9 @@ with DAG(
         python_callable=load,
     )
 
-    extract_task >> transform_task >> load_task
+    report_task = PythonOperator(
+        task_id='report',
+        python_callable=report,
+    )
+
+    extract_task >> transform_task >> load_task >> report_task

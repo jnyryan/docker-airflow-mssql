@@ -35,4 +35,6 @@ password: SolrRocks
 
 ## References
 
-https://factorpad.com/tech/solr/tutorial/solr-index.html
+[SOLR](https://factorpad.com/tech/solr/tutorial/solr-index.html)
+
+[Airflow Best Practices](https://medium.com/datareply/airflow-lesser-known-tips-tricks-and-best-practises-cf4d4a90f8f)

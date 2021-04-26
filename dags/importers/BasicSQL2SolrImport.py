@@ -41,9 +41,10 @@ class BasicSQL2SolrImport:
       headers = {'Content-type': 'application/json', 'Accept': 'text/plain'}
       session = requests.Session()
       resp = session.post(url, data=data, headers=headers)
-
+      if not resp.ok:
+        raise Exception('SOLR ERROR', resp)
       num_rows = len(json.loads(data))
-      print(f'Response form SOLR: {resp}')
+      print(f'Response from SOLR: {resp}')
       # print(f"***Num Records Loaded {num_rows} ")
       return json.dumps({
          "num_rows": num_rows
